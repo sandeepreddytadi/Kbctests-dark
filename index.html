@@ -464,8 +464,37 @@ function startGame() {
 }
 
     
-window.addEventListener('keydown', (e) => {
-  if (e.key.toLowerCase() === 'n') {
+const key = e.key.toLowerCase();
+  
+  // Start the game with the 's' key only if the welcome screen is currently displayed.
+  // The display property might be an empty string if it's not set, so checking for it
+  // not being 'none' is the most reliable method.
+  if (key === 's' && document.getElementById("welcome-screen").style.display !== "none") {
+    startGame();
+    return;
+  }
+  
+  // All other keypress logic follows
+  // ...
+  if (key === 'q' && quizActive) {
+    quitGame();
+    return;
+  }
+  
+  if (quizActive && !waitingForNext && !waitingForDoll) {
+    let optionIndex = -1;
+    if (key === 'a') optionIndex = 0;
+    else if (key === 'b') optionIndex = 1;
+    else if (key === 'c') optionIndex = 2;
+    else if (key === 'd') optionIndex = 3;
+
+    if (optionIndex !== -1) {
+      handleAnswer(optionIndex);
+      return;
+    }
+  }
+  
+  if (key === 'n') {
     if (!quizActive && introOver) {
       introOver = false;
       initializeGameForQuestion();
@@ -488,6 +517,13 @@ window.addEventListener('keydown', (e) => {
         }
         waitingForDoll = true;
       }
+    }
+  }
+  
+  if (key === 'r' && window.dollController && window.dollController.getState() === 'waiting') {
+    window.dollController.playAction2();
+    if (window.gameController) {
+      window.gameController.showDollSeeingMessage();
     }
   }
 });
